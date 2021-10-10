@@ -2,8 +2,11 @@
 
 DS2433::DS2433(uint8_t ID1, uint8_t ID2, uint8_t ID3, uint8_t ID4, uint8_t ID5, uint8_t ID6, uint8_t ID7) : OneWireItem(ID1, ID2, ID3, ID4, ID5, ID6, ID7)
 {
-    static_assert(sizeof(memory) < 65535,  "Implementation does not cover the whole address-space");
-    clearMemory();
+    static_assert(EEPROM_SIZE < 65535,  "Implementation does not cover the whole address-space");
+
+#ifdef EMULATE_WITH_RAM
+    clearMemory(); // erase RAM only; don't erase EEPROM 
+#endif
     clearScratchpad();
 }
 
@@ -59,10 +62,16 @@ void DS2433::duty(OneWireHub * const hub)
 
             reg_ES |= REG_ES_AA_MASK; // compare was successful
 
-            {    // Write Scratchpad to memory, writing takes about 5ms
+            {    // Write Scratchpad to EEPROM, writing takes about 5ms on real device
                 const uint8_t start  = uint8_t(reg_TA) & PAGE_MASK;
                 const uint8_t length = (reg_ES & PAGE_MASK)+ uint8_t(1) - start;
+
+#ifdef EMULATE_WITH_RAM
                 writeMemory(&scratchpad[start], length, reg_TA);
+#else
+		// Emulation on Arduino Uno takes about 110ms
+		EEPROM.writeBlock<uint8_t>(reg_TA, &scratchpad[start], length);
+#endif
             }
 
             noInterrupts();
@@ -97,7 +106,13 @@ void DS2433::duty(OneWireHub * const hub)
 
             for (uint16_t i = reg_TA; i < MEM_SIZE; i+=PAGE_SIZE) // model of the 32byte scratchpad
             {
+#ifdef EMULATE_WITH_RAM
                 if (hub->send(&memory[i],PAGE_SIZE)) return;
+#else
+                uint8_t pagemem[PAGE_SIZE];
+                EEPROM.readBlock<uint8_t>(i, pagemem, PAGE_SIZE);
+                if (hub->send(pagemem,PAGE_SIZE)) return;
+#endif
             }
             return; // datasheed says we should send all 1s, till reset (1s are passive... so nothing to do here)
 
@@ -109,7 +124,11 @@ void DS2433::duty(OneWireHub * const hub)
 
 void DS2433::clearMemory(void)
 {
+#ifdef EMULATE_WITH_RAM
     memset(memory, static_cast<uint8_t>(0x00), MEM_SIZE);
+#else
+//  EEPROM should never be erased
+#endif
 }
 
 void DS2433::clearScratchpad(void)
@@ -120,15 +139,29 @@ void DS2433::clearScratchpad(void)
 bool DS2433::writeMemory(const uint8_t* const source, const uint16_t length, const uint16_t position)
 {
     if (position >= MEM_SIZE) return false;
+
     const uint16_t _length = (position + length >= MEM_SIZE) ? (MEM_SIZE - position) : length;
+
+#ifdef EMULATE_WITH_RAM
     memcpy(&memory[position],source,_length);
+#else
+    EEPROM.writeBlock<uint8_t>(position, source, _length);
+#endif
+
     return true;
 }
 
 bool DS2433::readMemory(uint8_t* const destination, const uint16_t length, const uint16_t position) const
 {
     if (position >= MEM_SIZE) return false;
+
     const uint16_t _length = (position + length >= MEM_SIZE) ? (MEM_SIZE - position) : length;
+
+#ifdef EMULATE_WITH_RAM
     memcpy(destination,&memory[position],_length);
+#else
+    EEPROM.readBlock<uint8_t>(position, destination, _length);
+#endif
+
     return (_length==length);
 }
