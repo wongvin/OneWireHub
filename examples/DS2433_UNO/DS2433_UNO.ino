@@ -15,10 +15,10 @@ auto ds2433 = DS2433(DS2433::family_code, 0x00, 0x00, 0x33, 0x24, 0x00, 0x00);
 
 void setup()
 {
+#ifdef _DEBUG
     Serial.begin(115200);
     Serial.println("Maxim DS2433 Emulation with Arduino Uno using OneWire-Hub");
 
-#ifdef _DEBUG
     constexpr uint8_t mem_write[] = {
         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
         0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF,
@@ -49,12 +49,12 @@ void setup()
         Serial.print(mem_read[i],HEX); 
         i % 16 == 15 ?  Serial.println() : Serial.print(" ");
     }
+
+    Serial.println("config done");
 #endif
 
     // Setup OneWire
     hub.attach(ds2433);
-
-    Serial.println("config done");
 }
 
 void loop()
