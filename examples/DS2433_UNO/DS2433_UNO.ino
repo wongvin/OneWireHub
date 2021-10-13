@@ -44,7 +44,9 @@ void writePage(uint8_t *mem, uint8_t pagenum)
 
 void setup()
 {
-    EEPROM.setMaxAllowedWrites(1000);
+#ifndef EMULATE_WITH_RAM
+    EEPROM.setMaxAllowedWrites(10000);
+#endif
 
 #ifdef _DEBUG
     Serial.begin(115200);
