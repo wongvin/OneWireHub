@@ -58,10 +58,14 @@ void setup()
     Serial.println("Test Read page 2");
     readPage(pagemem, 2);
 
+    Serial.println("Test Write page 2 without changes");
+    writePage(pagemem, 2);
+    readPage(pagemem, 2);
+
     *reinterpret_cast<float *>(&pagemem[0]) = 100.0; // set a value
     *reinterpret_cast<uint16_t *>(&pagemem[4]) = 1234; // set a value
 
-    Serial.println("Test Write page 2 without changes");
+    Serial.println("Test Write page 2 with initial values");
     writePage(pagemem, 2);
     readPage(pagemem, 2);
 
