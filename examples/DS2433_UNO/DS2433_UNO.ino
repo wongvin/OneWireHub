@@ -6,13 +6,14 @@
 #include "OneWireHub.h"
 #include "DS2433.h"
 
-#define _DEBUG
+//#define _DEBUG
 
 constexpr uint8_t pin_onewire   { 8 };
 
 auto hub = OneWireHub(pin_onewire);
 auto ds2433 = DS2433(DS2433::family_code, 0x00, 0x00, 0x33, 0x24, 0x00, 0x00);
 
+#ifdef _DEBUG
 void printOnePage(uint8_t* mem)
 {
     for (uint8_t i = 0; i < 32; ++i)
@@ -38,6 +39,7 @@ void writePage(uint8_t *mem, uint8_t pagenum)
     Serial.print("Time to write (ms): ");
     Serial.println(endMillis-startMillis);
 }
+#endif
 
 
 void setup()
