@@ -11,7 +11,7 @@
 //#define EMULATE_WITH_RAM
 
 #ifndef EMULATE_WITH_RAM
-#include <EEPROMEx.h>
+#include <EEPROMex.h>
 #endif
 
 static constexpr uint16_t EEPROM_SIZE { 512 }; // 4Kb = 512 bytes
