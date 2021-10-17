@@ -1,5 +1,11 @@
 /*
-*  Maxim DS2433 Emulation with Arduino Uno using OneWire-Hub
+*  Maxim DS2433 Emulation with Arduino using OneWire-Hub
+*
+*  1. Tested emulation with RAM and EEPROM on Arduino Uno and Nano and with
+*  Maxim DS9490R# USB-to-1-wire (5V) adapter and OneWireViewer.
+*
+*  2. Tested emulation with EEPROM on Adafruit Trinket 1500 ATtiny85 8MHz
+*  and with Maxim DS9481R-3C7+ USB-to-1-wire (3.3V) adapter and OneWireViewer.
 */
 
 #include <EEPROMex.h>
@@ -8,7 +14,8 @@
 
 //#define _DEBUG
 
-constexpr uint8_t pin_onewire   { 8 };
+constexpr uint8_t pin_onewire   { 8 };   // for Arduino Uno and Nano
+//constexpr uint8_t pin_onewire   { 0 }; // for Adafruit Trinket ATtiny85 8MHz
 
 auto hub = OneWireHub(pin_onewire);
 auto ds2433 = DS2433(DS2433::family_code, 0x00, 0x00, 0x33, 0x24, 0x00, 0x00);
