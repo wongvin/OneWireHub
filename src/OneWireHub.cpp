@@ -867,6 +867,7 @@ ESP.wdtFeed();
 
 void OneWireHub::waitLoopsDebug(void) const
 {
+#ifndef NO_SERIAL_PORT
     if (USE_SERIAL_DEBUG)
     {
         Serial.println("DEBUG TIMINGS for the HUB (measured in loops):");
@@ -898,10 +899,12 @@ void OneWireHub::waitLoopsDebug(void) const
         Serial.println(ONEWIRE_TIME_WRITE_ZERO[od_mode]);
         Serial.flush();
     }
+#endif
 }
 
 void OneWireHub::printError(void) const
 {
+#ifndef NO_SERIAL_PORT
     if (USE_SERIAL_DEBUG)
     {
         if (_error == Error::NO_ERROR) return;
@@ -931,6 +934,7 @@ void OneWireHub::printError(void) const
             Serial.println("");
         }
     }
+#endif
 }
 
 Error OneWireHub::getError(void) const

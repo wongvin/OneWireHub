@@ -25,7 +25,8 @@
 #define DIRECT_WRITE_LOW(base, mask)    ((*((base)+2)) &= ~(mask))
 #define DIRECT_WRITE_HIGH(base, mask)   ((*((base)+2)) |= (mask))
 using io_reg_t = uint8_t; // define special datatype for register-access
-constexpr uint8_t VALUE_IPL {13}; // instructions per loop, compare 0 takes 11, compare 1 takes 13 cycles
+// Arduino Nano 16MHz ATMega328 -> 10 
+constexpr uint8_t VALUE_IPL {10}; // instructions per loop, compare 0 takes 11, compare 1 takes 13 cycles
 
 #elif defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK66FX1M0__) || defined(__MK64FX512__) /* teensy 3.2 to 3.6 */
 #define PIN_TO_BASEREG(pin)             (portOutputRegister(pin))

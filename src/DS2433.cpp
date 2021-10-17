@@ -70,7 +70,7 @@ void DS2433::duty(OneWireHub * const hub)
                 writeMemory(&scratchpad[start], length, reg_TA);
 #else
 		// Emulation on Arduino Uno takes about 110ms
-		EEPROM.writeBlock<uint8_t>(reg_TA, &scratchpad[start], length);
+		EEPROM.updateBlock<uint8_t>(reg_TA, &scratchpad[start], length);
 #endif
             }
 
@@ -145,7 +145,7 @@ bool DS2433::writeMemory(const uint8_t* const source, const uint16_t length, con
 #ifdef EMULATE_WITH_RAM
     memcpy(&memory[position],source,_length);
 #else
-    EEPROM.writeBlock<uint8_t>(position, source, _length);
+    EEPROM.updateBlock<uint8_t>(position, source, _length);
 #endif
 
     return true;
